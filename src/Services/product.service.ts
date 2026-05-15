@@ -1,93 +1,59 @@
 import type { Product } from '../Model/Product';
 
-/** DTO del backend (Spring u otro API) */
 interface ProductoApi {
   id: number;
   nombre: string;
-  marca?: string;
   precio: number;
   stock?: number;
-  imagen?: string;
+  image_url?: string;
+  imageUrl?: string;
+  descripción?: string;
+  descripcion?: string;
 }
 
-/** Mapper backend → frontend */
 function mapApiToProduct(p: ProductoApi): Product {
   return {
     id: p.id,
     name: p.nombre,
     price: p.precio,
-    imageUrl: p.imagen ?? '',
-    category: p.marca ?? 'General',
-    description: p.stock != null
-      ? `Unidades en stock: ${p.stock}.`
-      : undefined
+    imageUrl: p.imageUrl ?? p.image_url ?? '',
+    category: 'General',
+    description:
+      p.descripción ||
+      p.descripcion ||
+      (p.stock != null ? `Unidades en stock: ${p.stock}.` : undefined)
   };
 }
 
-const API_URL = import.meta.env.VITE_PRODUCTS_API_URL;
+const API_URL = (import.meta.env.VITE_PRODUCTS_API_URL as string | undefined) ?? (
+  import.meta.env.DEV ? 'http://localhost:9090/api/productos' : undefined
+);
 
-/** GET todos los productos */
-export async function getProducts(): Promise<Product[]> {
-  try {
-    const res = await fetch(API_URL);
-
-    if (!res.ok) throw new Error('Error API');
-
-    const data: ProductoApi[] = await res.json();
-
-    return data.map(mapApiToProduct);
-  } catch (error) {
-    console.error('Backend no disponible, usando mock');
-
-    return mockProducts;
+function getApiUrl(): string {
+  if (!API_URL) {
+    throw new Error('VITE_PRODUCTS_API_URL no está configurada');
   }
+  return API_URL;
 }
 
-/** GET producto por ID */
+export async function getProducts(): Promise<Product[]> {
+  const res = await fetch(getApiUrl());
+
+  if (!res.ok) throw new Error('Error API');
+
+  const data: ProductoApi[] = await res.json();
+
+  return data.map(mapApiToProduct);
+}
+
 export async function getProductById(
   id: number
 ): Promise<Product | undefined> {
-  try {
-    const res = await fetch(`${API_URL}/${id}`);
+  const res = await fetch(`${getApiUrl()}/${id}`);
 
-    if (!res.ok) throw new Error('Error API');
+  if (!res.ok) throw new Error('Error API');
 
-    const data: ProductoApi = await res.json();
+  const data: ProductoApi = await res.json();
 
-    return mapApiToProduct(data);
-  } catch (error) {
-    return mockProducts.find((p) => p.id === id);
-  }
+  return mapApiToProduct(data);
 }
-
-/** fallback offline */
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Samsung Galaxy A34',
-    price: 1299,
-    imageUrl: 'GALAXYA34_2.jpg',
-    category: 'Samsung'
-  },
-  {
-    id: 2,
-    name: 'Motorola G85',
-    price: 1099,
-    imageUrl: 'MOTOROLAG85.jpg',
-    category: 'Motorola'
-  },
-  {
-    id: 3,
-    name: 'iPhone 16 Pro',
-    price: 4599,
-    imageUrl: 'IP16PRO.png',
-    category: 'Apple'
-  },
-  {
-    id: 4,
-    name: 'Redmi Note 12',
-    price: 899,
-    imageUrl: 'REDMINOTE12.jpg',
-    category: 'Xiaomi'
-  }
-];

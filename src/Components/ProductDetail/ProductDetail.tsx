@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import './ProductDetail.css';
+import type { Product } from '../../Model/Product';
+import { getProductById } from '../../Services/product.service';
 
-type Product = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  imageUrl: string;
-  description?: string;
-};
+import './ProductDetail.css';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -19,24 +13,39 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => {
-    const API_URL = import.meta.env.VITE_PRODUCTS_API_URL || 'http://localhost:8080/products';
-    fetch(`${API_URL}/${id}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Producto no encontrado');
-        }
+  const fallbackImage = '/images/innovacell-celulares.jpeg_1902800913.webp';
 
-        return res.json();
-      })
-      .then((data) => {
+  useEffect(() => {
+    const numericId = Number(id);
+    if (!Number.isFinite(numericId)) {
+      setNotFound(true);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const data = await getProductById(numericId);
+        if (cancelled) return;
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
         setProduct(data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch {
+        if (cancelled) return;
         setNotFound(true);
+      } finally {
+        if (cancelled) return;
         setLoading(false);
-      });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const addToCart = () => {
@@ -88,13 +97,13 @@ export default function ProductDetail() {
 
         <span>/</span>
 
-        <Link to={`/products/${product.category.toLowerCase()}`}>
-          {product.category}
+        <Link to={`/products/${(product.category || 'general').toLowerCase()}`}>
+          {product.category || 'General'}
         </Link>
 
         <span>/</span>
 
-        <span>{product.name}</span>
+        <span>{product.name || 'Detalle'}</span>
       </nav>
 
       <div className="product-card">
@@ -103,19 +112,23 @@ export default function ProductDetail() {
             src={product.imageUrl}
             alt={product.name}
             className="product-image"
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage;
+              e.currentTarget.onerror = null;
+            }}
           />
         </div>
 
         <div className="product-info">
           <span className="category-badge">
-            {product.category}
+            {product.category || 'Sin categoría'}
           </span>
 
-          <h2>{product.name}</h2>
+          <h2>{product.name || 'Producto sin título'}</h2>
 
           <div className="price-section">
             <span className="price">
-              S/ {product.price.toFixed(2)}
+              S/ {product.price ? product.price.toFixed(2) : '0.00'}
             </span>
 
             <span className="available">
