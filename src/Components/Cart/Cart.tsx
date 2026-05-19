@@ -1,64 +1,49 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../../Services/CartContext';
+// import { useAuth } from '../../Services/AuthContext'; // Descomenta cuando uses el AuthContext
 import './Cart.css';
 
-type Product = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  imageUrl: string;
-};
-
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<Product[]>([]);
-  const [total, setTotal] = useState(0);
+  const { cart, removeAt, clearCart } = useCart();
+  const navigate = useNavigate();
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
 
-    if (storedCart) {
-      const items = JSON.parse(storedCart);
 
-      setCartItems(items);
+    const orderData = {
+      usuarioId: 1,
+      direccionEnvio: "Calle Ficticia 123, Lima",
+      total: total,
+      items: cart.map(item => ({
+        productoId: item.id,
+        cantidad: item.quantity,
+        precioUnitario: item.price
+      }))
+    };
 
-      const totalPrice = items.reduce(
-        (acc: number, item: Product) => acc + item.price,
-        0
-      );
+    try {
+      const response = await fetch('http://localhost:9090/api/pedidos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
 
-      setTotal(totalPrice);
+      if (response.ok) {
+        alert('¡Compra realizada con éxito! El stock ha sido actualizado.');
+        clearCart();
+        navigate('/products');
+      } else {
+        const errorData = await response.json();
+        alert(`Error al procesar: ${errorData.message || 'Stock insuficiente'}`);
+      }
+    } catch (err) {
+      console.error('Error en el checkout:', err);
+      alert('No se pudo conectar con el servidor.');
     }
-  }, []);
-
-  const removeItem = (index: number) => {
-    const updatedCart = [...cartItems];
-
-    updatedCart.splice(index, 1);
-
-    setCartItems(updatedCart);
-
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    const totalPrice = updatedCart.reduce(
-      (acc, item) => acc + item.price,
-      0
-    );
-
-    setTotal(totalPrice);
-  };
-
-  const checkout = () => {
-    alert(
-      '¡Gracias por tu compra en Kaizer Tech!'
-    );
-
-    setCartItems([]);
-
-    setTotal(0);
-
-    localStorage.removeItem('cart');
   };
 
   return (
@@ -67,34 +52,23 @@ export default function Cart() {
         Carrito de compras <i className="fi fi-rs-shopping-cart-add"></i>
       </h2>
 
-      {cartItems.length > 0 ? (
+      {cart.length > 0 ? (
         <div className="cart-layout">
           <div className="cart-products">
-            {cartItems.map((item, index) => (
-              <div className="cart-card" key={index}>
+            {cart.map((item, index) => (
+              <div className="cart-card" key={item.id}>
                 <div className="cart-image">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                  />
+                  <img src={item.imageUrl} alt={item.name} />
                 </div>
 
                 <div className="cart-info">
                   <h5>{item.name}</h5>
-
-                  <p>{item.category}</p>
+                  <p>Cantidad: {item.quantity}</p>
                 </div>
 
                 <div className="cart-actions">
-                  <span>
-                    S/ {item.price.toFixed(2)}
-                  </span>
-
-                  <button
-                    onClick={() => removeItem(index)}
-                  >
-                    Quitar
-                  </button>
+                  <span>S/ {(item.price * item.quantity).toFixed(2)}</span>
+                  <button onClick={() => removeAt(index)}>Quitar</button>
                 </div>
               </div>
             ))}
@@ -102,59 +76,29 @@ export default function Cart() {
 
           <div className="cart-summary">
             <h4>Resumen</h4>
-
             <div className="summary-row">
-              <span>
-                Subtotal ({cartItems.length})
-              </span>
-
-              <strong>
-                S/ {total.toFixed(2)}
-              </strong>
+              <span>Subtotal ({cart.length} items)</span>
+              <strong>S/ {total.toFixed(2)}</strong>
             </div>
-
             <div className="summary-row">
               <span>Envío</span>
-
-              <strong>Incluido</strong>
+              <strong>Gratis</strong>
             </div>
-
             <hr />
-
             <div className="summary-total">
               <span>Total</span>
-
-              <strong>
-                S/ {total.toFixed(2)}
-              </strong>
+              <strong>S/ {total.toFixed(2)}</strong>
             </div>
 
-            <button
-              className="checkout-button"
-              onClick={checkout}
-            >
-              Proceder al pago →
+            <button className="checkout-button" onClick={handleCheckout}>
+              Confirmar pedido y pagar →
             </button>
           </div>
         </div>
       ) : (
         <div className="empty-cart">
-          <div className="feature-icon">
-              <i className="fi fi-rs-shopping-bag"></i>
-            </div>
-
           <h3>Tu carrito está vacío</h3>
-
-          <p>
-            Añade productos desde el catálogo.
-          </p>
-
-          <Link
-            to="/products"
-            className="shop-button"
-          >
-            Ir a la tienda
-          </Link>
+          <Link to="/products" className="shop-button">Volver a la tienda</Link>
         </div>
       )}
     </div>

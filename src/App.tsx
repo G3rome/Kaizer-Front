@@ -23,12 +23,14 @@ function AppContent() {
         {/* El Header SIEMPRE se muestra */}
         <Header />
         
-        {/* El Navbar SOLO se muestra si NO estamos en /about */}
-        {!isAboutPage && <Navbar />}
+        {/* Eliminamos la condición !isAboutPage para que el Navbar se vea siempre */}
+        <Navbar />
       </div>
 
-      {/* Aplicamos una clase dinámica al main para ajustar el margen */}
-      <main className={`main-content ${isAboutPage ? 'only-header' : 'full-header'}`}>
+      {/* Si quieres que el margen superior sea siempre el mismo ahora que el Navbar 
+          está en todas las páginas, puedes simplificar la clase del main 
+      */}
+      <main className="main-content full-header">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -44,7 +46,6 @@ function AppContent() {
     </>
   );
 }
-
 function App() {
   return (
     <BrowserRouter>

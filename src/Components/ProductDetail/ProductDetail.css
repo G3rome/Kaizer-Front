@@ -119,14 +119,16 @@
 }
 
 .add-cart-button {
-  background: var(--accent-primary);
-  color: var(--white);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
+  font-weight: 700;
 }
 
 .add-cart-button:hover {
-  background: var(--accent-hover);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: #15803d;
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5);
+  transform: translateY(-2px);
 }
 
 .cart-button {

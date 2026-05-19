@@ -81,7 +81,7 @@ export function CartProvider({
   // 🔥 FUTURO BACKEND (listo para conectar API)
   const syncCartFromBackend = async () => {
     const res = await fetch(
-      'http://localhost:8080/cart'
+      'http://localhost:9090/cart'
     );
 
     const data = await res.json();

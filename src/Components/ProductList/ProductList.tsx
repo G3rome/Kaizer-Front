@@ -1,66 +1,46 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import type { Product } from '../../Model/Product';
-import { getProducts } from '../../Services/product.service';
+import { useCart } from '../../Services/CartContext'; // 1. Importamos el hook del carrito
 
 import './ProductList.css';
 
+type Product = {
+  id: number;
+  nombre: string;      
+  descripcion: string;  
+  precio: number;      
+  imageUrl: string;    
+  stock: number;       
+};
+
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const fallbackImage = '/images/innovacell-celulares.jpeg_1902800913.webp';
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
-    let cancelled = false;
 
-    (async () => {
-      try {
-        const data = await getProducts();
-        if (cancelled) return;
-        setProducts(data);
-      } catch {
-        if (cancelled) return;
-        setError(true);
-      } finally {
-        if (cancelled) return;
-        setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+    fetch('http://localhost:9090/api/productos')
+      .then((res) => {
+        if (!res.ok) throw new Error('Error al conectar con la API');
+        return res.json();
+      })
+      .then((data) => setProducts(data))
+      .catch((err) =>
+        console.error('Error cargando productos desde la BD', err)
+      );
   }, []);
 
-  const addToCart = (product: Product) => {
-    const cart = JSON.parse(
-      localStorage.getItem('cart') || '[]'
-    );
+  const handleAddToCart = (product: Product) => {
 
-    cart.push(product);
+    const productToSave = {
+        ...product,
+        name: product.nombre,
+        price: product.precio
+    };
 
-    localStorage.setItem(
-      'cart',
-      JSON.stringify(cart)
-    );
-
-    alert(`¡${product.name} agregado al carrito!`);
+    addToCart(productToSave as any); 
+    alert(`¡${product.nombre} agregado al carrito!`);
   };
-
-  if (loading) {
-    return <div className="products-container"><div className="loading-spinner">Cargando catálogo...</div></div>;
-  }
-
-  if (error) {
-    return (
-      <div className="products-container">
-        <h2>Hubo un problema al cargar los productos. Por favor, intenta de nuevo más tarde.</h2>
-      </div>
-    );
-  }
 
   return (
     <section className="products-container">
@@ -69,34 +49,33 @@ export default function ProductList() {
       </h2>
 
       <div className="products-grid">
-        {products.map((product) => {
-          if (product.id == null) return null;
-
-          return (
-            <div className="product-card" key={product.id}>
+        {products.map((product) => (
+          <div
+            className="product-card"
+            key={product.id}
+          >
             <div className="product-image-container">
               <img
                 src={product.imageUrl}
-                alt={product.name}
+                alt={product.nombre}
                 className="product-image"
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = fallbackImage;
-                  e.currentTarget.onerror = null; // Evita loop infinito si el fallback falla
-                }}
               />
-
+              
               <span className="product-category">
-                {product.category || 'General'}
+                Celular
               </span>
             </div>
 
             <div className="product-body">
-              <h5>{product.name || 'Producto sin título'}</h5>
+              <h5>{product.nombre}</h5>
 
               <p className="product-price">
-                S/ {product.price ? product.price.toFixed(2) : '0.00'}
+                S/ {Number(product.precio).toFixed(2)}
               </p>
+              
+              {product.stock <= 0 && (
+                <p className="out-of-stock">Agotado</p>
+              )}
             </div>
 
             <div className="product-footer">
@@ -109,14 +88,14 @@ export default function ProductList() {
 
               <button
                 className="cart-button"
-                onClick={() => addToCart(product)}
+                onClick={() => handleAddToCart(product)}
+                disabled={product.stock <= 0}
               >
-                🛒 Añadir al carrito
+                {product.stock > 0 ? '🛒 Añadir al carrito' : 'Sin stock'}
               </button>
             </div>
           </div>
-          );
-        })}
+        ))}
       </div>
     </section>
   );

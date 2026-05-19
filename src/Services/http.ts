@@ -1,15 +1,6 @@
 import axios from 'axios';
 
-const productsApiUrl: string | undefined = import.meta.env
-  .VITE_PRODUCTS_API_URL;
-
-const baseURL: string | undefined = import.meta.env
-  .VITE_API_URL ?? import.meta.env
-  .VITE_API_BASE_URL ?? (
-  productsApiUrl
-    ? productsApiUrl.replace(/\/api\/productos\/?$/, '')
-    : undefined
-);
+const baseURL = 'http://localhost:9090'; 
 
 export const http = axios.create({
   baseURL
