@@ -6,8 +6,9 @@ import {
 } from 'react';
 
 import type { Product } from '../Model/Product';
+import { warmUpBackend } from './backend.service';
 
-type CartItem = Product & {
+export type CartItem = Product & {
   quantity: number;
 };
 
@@ -30,19 +31,22 @@ export function CartProvider({
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // 🔵 inicial (localStorage temporal)
+  // (localStorage temporal)
   useEffect(() => {
     const stored = localStorage.getItem('cart');
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  // 🔵 persistencia local (temporal, luego se puede quitar)
+  // persistencia local (temporal, luego se puede quitar)
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   // 🟢 ADD
   const addToCart = (product: Product) => {
+    // Calienta el backend al primer "intento de compra"
+    void warmUpBackend();
+
     setCart((prev) => {
       const existing = prev.find(
         (p) => p.id === product.id
@@ -66,14 +70,14 @@ export function CartProvider({
     });
   };
 
-  // 🟢 REMOVE
+  //  REMOVE
   const removeAt = (index: number) => {
     setCart((prev) =>
       prev.filter((_, i) => i !== index)
     );
   };
 
-  // 🟢 CLEAR
+  //  CLEAR
   const clearCart = () => {
     setCart([]);
   };
@@ -81,7 +85,7 @@ export function CartProvider({
   // 🔥 FUTURO BACKEND (listo para conectar API)
   const syncCartFromBackend = async () => {
     const res = await fetch(
-      'http://localhost:8080/cart'
+      'https://kaizer-back.onrender.com/api/cart'
     );
 
     const data = await res.json();

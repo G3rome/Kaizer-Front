@@ -1,123 +1,177 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { Product } from '../../Model/Product';
-import { getProducts } from '../../Services/product.service';
+import { useProducts } from '../../Hooks/useProducts';
+import { useCart } from '../../Services/CartContext';
 
 import './ProductList.css';
 
 export default function ProductList() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { products, loading, error } = useProducts();
+  const { addToCart } = useCart();
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [maxPrice, setMaxPrice] = useState<number>(10000);
+  const [sortBy, setSortBy] = useState<string>('default');
 
   const fallbackImage = '/images/innovacell-celulares.jpeg_1902800913.webp';
 
-  useEffect(() => {
-    let cancelled = false;
+  const categories = useMemo(() => {
+    const list = new Set<string>();
+    products.forEach((p: any) => {
+      const cat = p.category || p.categoria;
+      if (cat) list.add(cat);
+    });
+    return ['Todos', ...Array.from(list)];
+  }, [products]);
 
-    (async () => {
-      try {
-        const data = await getProducts();
-        if (cancelled) return;
-        setProducts(data);
-      } catch {
-        if (cancelled) return;
-        setError(true);
-      } finally {
-        if (cancelled) return;
-        setLoading(false);
-      }
-    })();
+  const processedProducts = useMemo(() => {
+    let result = products.filter((product: any) => {
+      const cat = product.category || product.categoria;
+      const price = product.price || product.precio || 0;
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      const matchesCategory = selectedCategory === 'Todos' || cat === selectedCategory;
+      const matchesPrice = price <= maxPrice;
 
-  const addToCart = (product: Product) => {
-    const cart = JSON.parse(
-      localStorage.getItem('cart') || '[]'
-    );
+      return matchesCategory && matchesPrice;
+    });
 
-    cart.push(product);
+    const sorted = [...result];
+    if (sortBy === 'low-to-high') {
+      sorted.sort((a: any, b: any) => (a.price || a.precio || 0) - (b.price || b.precio || 0));
+    } else if (sortBy === 'high-to-low') {
+      sorted.sort((a: any, b: any) => (b.price || b.precio || 0) - (a.price || a.precio || 0));
+    }
 
-    localStorage.setItem(
-      'cart',
-      JSON.stringify(cart)
-    );
+    return sorted;
+  }, [products, selectedCategory, maxPrice, sortBy]);
 
-    alert(`¡${product.name} agregado al carrito!`);
-  };
+  const outOfStock = useMemo(() => {
+    const set = new Set<number>();
+    for (const p of products) {
+      if (p.id != null && (p.stock ?? 0) <= 0) set.add(p.id);
+    }
+    return set;
+  }, [products]);
 
   if (loading) {
-    return <div className="products-container"><div className="loading-spinner">Cargando catálogo...</div></div>;
+    return <div className="kaizer-loading-box">Cargando catálogo...</div>;
   }
 
   if (error) {
     return (
-      <div className="products-container">
+      <div className="kaizer-error-box">
         <h2>Hubo un problema al cargar los productos. Por favor, intenta de nuevo más tarde.</h2>
       </div>
     );
   }
 
   return (
-    <section className="products-container">
-      <h2 className="products-title">
-        Nuestros productos
-      </h2>
+    <div className="kaizer-catalog-wrapper">
+      
+      <aside className="kaizer-sidebar">
+        <h4 className="kaizer-sidebar-title">Filtros Avanzados</h4>
+        
+        <div className="kaizer-filter-item">
+          <label htmlFor="sort-select">Ordenar por:</label>
+          <select 
+            id="sort-select"
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            className="kaizer-select-input"
+          >
+            <option value="default">Recomendados</option>
+            <option value="low-to-high">Precio: Menor a Mayor</option>
+            <option value="high-to-low">Precio: Mayor a Menor</option>
+          </select>
+        </div>
 
-      <div className="products-grid">
-        {products.map((product) => {
-          if (product.id == null) return null;
+        <div className="kaizer-filter-item">
+          <label>
+            Precio máximo: <span>S/ {maxPrice}</span>
+          </label>
+          <input 
+            type="range" 
+            min="0" 
+            max="10000" 
+            step="50"
+            value={maxPrice} 
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            className="kaizer-range-input"
+          />
+        </div>
+      </aside>
 
-          return (
-            <div className="product-card" key={product.id}>
-            <div className="product-image-container">
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="product-image"
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = fallbackImage;
-                  e.currentTarget.onerror = null; // Evita loop infinito si el fallback falla
-                }}
-              />
+      <main className="kaizer-main-content">
+        <h2 className="kaizer-main-title">Nuestros productos</h2>
 
-              <span className="product-category">
-                {product.category || 'General'}
-              </span>
-            </div>
+        <div className="kaizer-chips-container">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`kaizer-chip-btn ${selectedCategory === category ? 'is-active' : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
-            <div className="product-body">
-              <h5>{product.name || 'Producto sin título'}</h5>
-
-              <p className="product-price">
-                S/ {product.price ? product.price.toFixed(2) : '0.00'}
-              </p>
-            </div>
-
-            <div className="product-footer">
-              <Link
-                to={`/products/${product.id}`}
-                className="details-button"
-              >
-                Ver detalles
-              </Link>
-
-              <button
-                className="cart-button"
-                onClick={() => addToCart(product)}
-              >
-                🛒 Añadir al carrito
-              </button>
-            </div>
+        {processedProducts.length === 0 ? (
+          <div className="kaizer-empty-msg">
+            No se encontraron productos con los filtros seleccionados.
           </div>
-          );
-        })}
-      </div>
-    </section>
+        ) : (
+          <div className="kaizer-products-grid">
+            {processedProducts.map((product: any) => {
+              if (product.id == null) return null;
+
+              const currentImg = product.imageUrl || product.image_url || fallbackImage;
+              const currentName = product.name || product.nombre || 'Producto sin título';
+              const currentPrice = product.price || product.precio || 0;
+
+              return (
+                <div className="kaizer-card" key={product.id}>
+                  <div className="kaizer-card-img-box">
+                    <img
+                      src={currentImg}
+                      alt={currentName}
+                      className="kaizer-card-img"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage;
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                  </div>
+
+                  <div className="kaizer-card-body">
+                    <h5 className="kaizer-card-name">{currentName}</h5>
+                    <p className="kaizer-card-price">S/ {currentPrice.toFixed(2)}</p>
+                    <p className="kaizer-card-stock">
+                      Stock: {product.stock ?? 0}
+                    </p>
+                  </div>
+                  <div className="kaizer-card-footer">
+                    <Link to={`/products/${product.id}`} className="kaizer-btn-details">
+                      Detalles
+                    </Link>
+                    <button
+                      className="kaizer-btn-cart"
+                      disabled={outOfStock.has(product.id)}
+                      onClick={() => addToCart(product as Product)}
+                    >
+                       Añadir
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+
+    </div>
   );
 }

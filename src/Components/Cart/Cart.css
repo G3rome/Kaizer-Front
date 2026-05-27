@@ -37,6 +37,8 @@
 
 .cart-card:hover {
   border-color: var(--bg-tertiary);
+  color: #2E3532;
+
 }
 
 .cart-image img {
@@ -88,7 +90,8 @@
 
 .cart-actions button:hover {
   background: var(--danger);
-  color: var(--white);
+    color: #2E3532;
+
 }
 
 .cart-summary {
@@ -132,8 +135,8 @@
 .checkout-button {
   width: 100%;
   padding: 16px;
-  background: var(--accent-primary);
-  color: var(--white);
+  background: var(--gray-800);
+  color: var(--blue-50);
   border: none;
   border-radius: 999px;
   font-size: 1rem;
@@ -146,6 +149,8 @@
 .checkout-button:hover {
   background: var(--accent-hover);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  color: #2E3532;
+
 }
 
 .empty-cart {
@@ -185,7 +190,9 @@
 }
 
 .shop-button:hover {
-  background: var(--accent-hover);
+  background: var(--accent-hover);  
+  color: #2E3532;
+
 }
 
 @media (max-width: 900px) {

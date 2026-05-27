@@ -1,64 +1,39 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useMemo, useState } from 'react';
 import './Cart.css';
-
-type Product = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  imageUrl: string;
-};
+import { checkout, StockInsuficienteError } from '../../Services/backend.service';
+import { useCart } from '../../Services/CartContext';
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<Product[]>([]);
-  const [total, setTotal] = useState(0);
+  const { cart, removeAt, clearCart } = useCart();
+  const [alert, setAlert] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
+  const total = useMemo(() => {
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  }, [cart]);
 
-    if (storedCart) {
-      const items = JSON.parse(storedCart);
+  const onCheckout = async () => {
+    setAlert(null);
+    setLoading(true);
 
-      setCartItems(items);
-
-      const totalPrice = items.reduce(
-        (acc: number, item: Product) => acc + item.price,
-        0
-      );
-
-      setTotal(totalPrice);
+    try {
+      const res = await checkout(cart);
+      clearCart();
+      setAlert(`Compra exitosa. Orden: ${res.orderId}. Total: S/ ${res.total.toFixed(2)}`);
+    } catch (e) {
+      if (e instanceof StockInsuficienteError) {
+        // Alerta controlada para HTTP 400 (stock insuficiente)
+        setAlert(e.message);
+      } else if (e instanceof Error) {
+        setAlert(e.message);
+      } else {
+        setAlert('Error inesperado en checkout.');
+      }
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  const removeItem = (index: number) => {
-    const updatedCart = [...cartItems];
-
-    updatedCart.splice(index, 1);
-
-    setCartItems(updatedCart);
-
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    const totalPrice = updatedCart.reduce(
-      (acc, item) => acc + item.price,
-      0
-    );
-
-    setTotal(totalPrice);
-  };
-
-  const checkout = () => {
-    alert(
-      '¡Gracias por tu compra en Kaizer Tech!'
-    );
-
-    setCartItems([]);
-
-    setTotal(0);
-
-    localStorage.removeItem('cart');
   };
 
   return (
@@ -67,10 +42,22 @@ export default function Cart() {
         Carrito de compras <i className="fi fi-rs-shopping-cart-add"></i>
       </h2>
 
-      {cartItems.length > 0 ? (
+      {alert && (
+        <div role="alert" className="cart-card" style={{ border: '1px solid #999' }}>
+          <div className="cart-info">
+            <h5>Mensaje</h5>
+            <p>{alert}</p>
+          </div>
+          <div className="cart-actions">
+            <button onClick={() => setAlert(null)}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      {cart.length > 0 ? (
         <div className="cart-layout">
           <div className="cart-products">
-            {cartItems.map((item, index) => (
+            {cart.map((item, index) => (
               <div className="cart-card" key={index}>
                 <div className="cart-image">
                   <img
@@ -82,16 +69,17 @@ export default function Cart() {
                 <div className="cart-info">
                   <h5>{item.name}</h5>
 
-                  <p>{item.category}</p>
+                  <p>{item.category || 'General'}</p>
+                  <p>Cantidad: {item.quantity}</p>
                 </div>
 
                 <div className="cart-actions">
                   <span>
-                    S/ {item.price.toFixed(2)}
+                    S/ {(item.price * item.quantity).toFixed(2)}
                   </span>
 
                   <button
-                    onClick={() => removeItem(index)}
+                    onClick={() => removeAt(index)}
                   >
                     Quitar
                   </button>
@@ -105,7 +93,7 @@ export default function Cart() {
 
             <div className="summary-row">
               <span>
-                Subtotal ({cartItems.length})
+                Subtotal ({cart.length})
               </span>
 
               <strong>
@@ -131,9 +119,10 @@ export default function Cart() {
 
             <button
               className="checkout-button"
-              onClick={checkout}
+              disabled={loading}
+              onClick={() => void onCheckout()}
             >
-              Proceder al pago →
+              {loading ? 'Procesando…' : 'Proceder al pago →'}
             </button>
           </div>
         </div>

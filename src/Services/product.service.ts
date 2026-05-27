@@ -1,4 +1,5 @@
 import type { Product } from '../Model/Product';
+import { supabase } from './supabaseClient';
 
 interface ProductoApi {
   id: number;
@@ -9,6 +10,7 @@ interface ProductoApi {
   imageUrl?: string;
   descripción?: string;
   descripcion?: string;
+  especificaciones?: any; 
 }
 
 function mapApiToProduct(p: ProductoApi): Product {
@@ -21,39 +23,34 @@ function mapApiToProduct(p: ProductoApi): Product {
     description:
       p.descripción ||
       p.descripcion ||
-      (p.stock != null ? `Unidades en stock: ${p.stock}.` : undefined)
+      (p.stock != null ? `Unidades en stock: ${p.stock}.` : undefined),
+    stock: p.stock,
+    specifications: p.especificaciones 
   };
 }
 
-const API_URL = (import.meta.env.VITE_PRODUCTS_API_URL as string | undefined) ?? (
-  import.meta.env.DEV ? 'http://localhost:9090/api/productos' : undefined
-);
-
-function getApiUrl(): string {
-  if (!API_URL) {
-    throw new Error('VITE_PRODUCTS_API_URL no está configurada');
-  }
-  return API_URL;
-}
-
 export async function getProducts(): Promise<Product[]> {
-  const res = await fetch(getApiUrl());
+  const { data, error } = await supabase
+    .from('productos')
+    .select('id,nombre,precio,stock,image_url,descripcion,especificaciones')
+    .order('nombre', { ascending: true });
 
-  if (!res.ok) throw new Error('Error API');
+  if (error) throw new Error(error.message);
 
-  const data: ProductoApi[] = await res.json();
-
-  return data.map(mapApiToProduct);
+  return ((data ?? []) as ProductoApi[]).map(mapApiToProduct);
 }
 
 export async function getProductById(
   id: number
 ): Promise<Product | undefined> {
-  const res = await fetch(`${getApiUrl()}/${id}`);
+  const { data, error } = await supabase
+    .from('productos')
+    .select('id,nombre,precio,stock,image_url,descripcion,especificaciones')
+    .eq('id', id)
+    .maybeSingle();
 
-  if (!res.ok) throw new Error('Error API');
+  if (error) throw new Error(error.message);
+  if (!data) return undefined;
 
-  const data: ProductoApi = await res.json();
-
-  return mapApiToProduct(data);
+  return mapApiToProduct(data as ProductoApi);
 }

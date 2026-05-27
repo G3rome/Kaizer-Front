@@ -5,10 +5,13 @@ export interface Product {
   imageUrl: string;
   description?: string;
   category?: string;
+  stock?: number;
+    especificaciones?: any;
+  specifications?: any; 
 }
 
 export type CartItem = Product & {
   quantity?: number;
 };
 
-export type Cart = CartItem[];  
+export type Cart = CartItem[];

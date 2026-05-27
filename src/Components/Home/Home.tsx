@@ -1,7 +1,7 @@
 import './Home.css';
 
 export default function Home() {
-  const heroImage = '/images/innovacell-celulares.jpeg_1902800913.webp';
+const heroImage = '/images/multiples-opciones-celulares-gama-media.jpg';
 
   return (
     <div className="home">
