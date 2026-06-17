@@ -297,23 +297,8 @@ export default function CheckoutModal({
               <div className="co-qr-section">
 
                 <div className="co-qr-img">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path fill="#fff" d="M0 0h120v120H0z"/><rect width="30" height="30" x="10" y="10" fill="#111214" rx="2"/><rect width="22" height="22" x="14" y="14" fill="#fff" rx="1"/><rect width="14" height="14" x="18" y="18" fill="#111214" rx="1"/><rect width="30" height="30" x="80" y="10" fill="#111214" rx="2"/><rect width="22" height="22" x="84" y="14" fill="#fff" rx="1"/><rect width="14" height="14" x="88" y="18" fill="#111214" rx="1"/><rect width="30" height="30" x="10" y="80" fill="#111214" rx="2"/><rect width="22" height="22" x="14" y="84" fill="#fff" rx="1"/><rect width="14" height="14" x="18" y="88" fill="#111214" rx="1"/>{[
-                    50, 54, 58, 62, 66, 70, 74,
-                    78, 82, 50, 62, 74, 50, 54,
-                    58, 70, 78, 82, 50, 66, 82,
-                    50, 54, 62, 70, 74, 78
-                  ].map((x, i) => (
-                    <rect
-                      key="__JSX_BASE64__aQ==__"
-                      x="__JSX_BASE64__eA==__"
-                      y="__JSX_BASE64__NDYgKyAoaSAlIDcpICogNg==__"
-                      width="4"
-                      height="4"
-                      fill="#111214"
-                    />
-                  ))}<rect width="16" height="16" x="52" y="52" fill="#d4a017" rx="2"/><text x="60" y="64" fill="#fff" fontSize="9" fontWeight="bold" textAnchor="middle">
-                      K
-                    </text></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24"><path fill="#000" d="M0 0h24v24H0z"/><path stroke="#fff" stroke-linejoin="round" stroke-width="2" d="M4 4h6v6H4zm10 10h6v6h-6zm0-10h6v6h-6zm-4 10h.01v.01H10zm0 4h.01v.01H10zm-3 2h.01v.01H7zm0-4h.01v.01H7zm-3 2h.01v.01H4zm0-4h.01v.01H4z"/><path stroke="#fff" stroke-linejoin="round" stroke-width="2" d="M7 7h.01v.01H7zm10 10h.01v.01H17z"/></svg>
+
                 </div>
 
                 <div className="co-qr-scan">

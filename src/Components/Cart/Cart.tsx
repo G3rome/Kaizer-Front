@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import './Cart.css';
-import { checkout, StockInsuficienteError } from '../../Services/backend.service';
 import { useCart } from '../../Services/CartContext';
 import CheckoutModal from '../Checkout/CheckoutModal';
 
@@ -62,35 +61,6 @@ export default function Cart() {
   const igv           = useMemo(() => subtotalBruto - baseImponible, [subtotalBruto, baseImponible]);
   const envio         = useMemo(() => SHIPPING_RATES[selectedDistrict] ?? 20, [selectedDistrict]);
   const total         = useMemo(() => subtotalBruto + envio, [subtotalBruto, envio]);
-
-  const onDirectCheckout = async () => {
-    setLoading(true);
-    try {
-      const res = await checkout(cart);
-      const data = {
-        orderId:   res.orderId,
-        subtotal:  baseImponible,
-        igv,
-        envio,
-        total,
-        district:  selectedDistrict,
-        items:     [...cart],
-      };
-      clearCart();
-      setOrderData(data);
-      toast.success(`Compra exitosa. Orden #${res.orderId}`);
-    } catch (e) {
-      if (e instanceof StockInsuficienteError) {
-        toast.error(e.message, { duration: 6000 });
-      } else if (e instanceof Error) {
-        toast.error(e.message);
-      } else {
-        toast.error('Error inesperado en checkout.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="cart-container">
