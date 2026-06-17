@@ -6,7 +6,7 @@ import { checkout, StockInsuficienteError } from '../../Services/backend.service
 import { useCart } from '../../Services/CartContext';
 
 export default function Cart() {
-  const { cart, removeAt, clearCart } = useCart();
+  const { cart, removeAt, updateQuantity, clearCart } = useCart();
   const [alert, setAlert] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +70,32 @@ export default function Cart() {
                   <h5>{item.name}</h5>
 
                   <p>{item.category || 'General'}</p>
-                  <p>Cantidad: {item.quantity}</p>
+
+                  <div className="quantity-control">
+                    <button
+                      type="button"
+                      aria-label={`Disminuir cantidad de ${item.name}`}
+                      disabled={item.quantity <= 1}
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
+                      −
+                    </button>
+
+                    <span>{item.quantity}</span>
+
+                    <button
+                      type="button"
+                      aria-label={`Aumentar cantidad de ${item.name}`}
+                      disabled={item.stock !== undefined && item.quantity >= item.stock}
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {item.stock !== undefined && item.quantity >= item.stock && (
+                    <p className="stock-limit-msg">Stock máximo alcanzado</p>
+                  )}
                 </div>
 
                 <div className="cart-actions">

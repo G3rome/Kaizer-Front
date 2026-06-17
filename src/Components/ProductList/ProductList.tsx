@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import type { Product } from '../../Model/Product';
 import { useProducts } from '../../Hooks/useProducts';
@@ -11,9 +11,13 @@ export default function ProductList() {
   const { products, loading, error } = useProducts();
   const { addToCart } = useCart();
 
+  const [searchParams] = useSearchParams();
+  const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase();
+
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [sortBy, setSortBy] = useState<string>('default');
+  const [onlyInStock, setOnlyInStock] = useState<boolean>(false);
 
   const fallbackImage = '/images/innovacell-celulares.jpeg_1902800913.webp';
 
@@ -27,14 +31,22 @@ export default function ProductList() {
   }, [products]);
 
   const processedProducts = useMemo(() => {
-    let result = products.filter((product: any) => {
+    const result = products.filter((product: any) => {
       const cat = product.category || product.categoria;
+      const name = product.name || product.nombre || '';
       const price = product.price || product.precio || 0;
+      const stock = product.stock ?? 0;
 
       const matchesCategory = selectedCategory === 'Todos' || cat === selectedCategory;
       const matchesPrice = price <= maxPrice;
+      const matchesStock = !onlyInStock || stock > 0;
 
-      return matchesCategory && matchesPrice;
+      const matchesSearch =
+        searchQuery === '' ||
+        name.toLowerCase().includes(searchQuery) ||
+        (cat ? cat.toLowerCase().includes(searchQuery) : false);
+
+      return matchesCategory && matchesPrice && matchesStock && matchesSearch;
     });
 
     const sorted = [...result];
@@ -45,7 +57,7 @@ export default function ProductList() {
     }
 
     return sorted;
-  }, [products, selectedCategory, maxPrice, sortBy]);
+  }, [products, selectedCategory, maxPrice, sortBy, onlyInStock, searchQuery]);
 
   const outOfStock = useMemo(() => {
     const set = new Set<number>();
@@ -56,7 +68,36 @@ export default function ProductList() {
   }, [products]);
 
   if (loading) {
-    return <div className="kaizer-loading-box">Cargando catálogo...</div>;
+    return (
+      <div className="kaizer-catalog-wrapper">
+        <aside className="kaizer-sidebar kaizer-sidebar-skeleton">
+          <div className="kaizer-skeleton-line kaizer-skeleton-title" />
+          <div className="kaizer-skeleton-line" />
+          <div className="kaizer-skeleton-line" />
+        </aside>
+
+        <main className="kaizer-main-content">
+          <h2 className="kaizer-main-title">Nuestros productos</h2>
+
+          <div className="kaizer-products-grid" aria-busy="true" aria-label="Cargando productos">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div className="kaizer-card kaizer-card-skeleton" key={i}>
+                <div className="kaizer-skeleton kaizer-card-img-box" />
+                <div className="kaizer-card-body">
+                  <div className="kaizer-skeleton kaizer-skeleton-text" style={{ width: '80%' }} />
+                  <div className="kaizer-skeleton kaizer-skeleton-text" style={{ width: '40%' }} />
+                  <div className="kaizer-skeleton kaizer-skeleton-text" style={{ width: '55%' }} />
+                </div>
+                <div className="kaizer-card-footer">
+                  <div className="kaizer-skeleton kaizer-skeleton-btn" />
+                  <div className="kaizer-skeleton kaizer-skeleton-btn" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
   }
 
   if (error) {
@@ -100,6 +141,20 @@ export default function ProductList() {
             onChange={(e) => setMaxPrice(Number(e.target.value))}
             className="kaizer-range-input"
           />
+        </div>
+
+        <div className="kaizer-filter-item kaizer-toggle-item">
+          <label htmlFor="stock-toggle">Solo productos en stock</label>
+          <button
+            id="stock-toggle"
+            type="button"
+            role="switch"
+            aria-checked={onlyInStock}
+            className={`kaizer-toggle ${onlyInStock ? 'is-on' : ''}`}
+            onClick={() => setOnlyInStock((prev) => !prev)}
+          >
+            <span className="kaizer-toggle-knob" />
+          </button>
         </div>
       </aside>
 

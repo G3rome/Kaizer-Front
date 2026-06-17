@@ -16,6 +16,7 @@ type CartContextType = {
   cart: CartItem[];
   addToCart: (product: Product) => void;
   removeAt: (index: number) => void;
+  updateQuantity: (id: number | undefined, quantity: number) => void;
   clearCart: () => void;
   syncCartFromBackend: () => Promise<void>;
 };
@@ -24,28 +25,76 @@ const CartContext = createContext<CartContextType | undefined>(
   undefined
 );
 
+const STORAGE_KEY = 'cart';
+
+function isValidCartItem(value: unknown): value is CartItem {
+  if (typeof value !== 'object' || value === null) return false;
+
+  const item = value as Record<string, unknown>;
+
+  return (
+    typeof item.name === 'string' &&
+    typeof item.price === 'number' &&
+    !Number.isNaN(item.price) &&
+    typeof item.imageUrl === 'string' &&
+    typeof item.quantity === 'number' &&
+    Number.isFinite(item.quantity) &&
+    item.quantity > 0
+  );
+}
+
+function hydrateCartFromStorage(): CartItem[] {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(stored);
+
+    if (!Array.isArray(parsed)) {
+      console.warn('Carrito persistido no es un array, se descarta.');
+      return [];
+    }
+
+    const valid = parsed.filter(isValidCartItem);
+
+    if (valid.length !== parsed.length) {
+      console.warn(
+        `Se descartaron ${parsed.length - valid.length} ítem(s) de carrito con formato inválido.`
+      );
+    }
+
+    return valid;
+  } catch (err) {
+    console.warn('No se pudo parsear el carrito persistido, se descarta.', err);
+    return [];
+  }
+}
+
 export function CartProvider({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(hydrateCartFromStorage);
 
-  // (localStorage temporal)
   useEffect(() => {
-    const stored = localStorage.getItem('cart');
-    if (stored) setCart(JSON.parse(stored));
-  }, []);
-
-  // persistencia local (temporal, luego se puede quitar)
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
-  // 🟢 ADD
+  useEffect(() => {
+    const persistOnUnload = () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+    };
+
+    window.addEventListener('beforeunload', persistOnUnload);
+    return () => window.removeEventListener('beforeunload', persistOnUnload);
+  }, [cart]);
+
   const addToCart = (product: Product) => {
-    // Calienta el backend al primer "intento de compra"
+
     void warmUpBackend();
+
+    const maxStock = product.stock ?? Infinity;
 
     setCart((prev) => {
       const existing = prev.find(
@@ -53,6 +102,10 @@ export function CartProvider({
       );
 
       if (existing) {
+        if (existing.quantity >= maxStock) {
+          return prev;
+        }
+
         return prev.map((p) =>
           p.id === product.id
             ? {
@@ -65,24 +118,34 @@ export function CartProvider({
 
       return [
         ...prev,
-        { ...product, quantity: 1 }
+        { ...product, quantity: Math.min(1, maxStock) }
       ];
     });
   };
 
-  //  REMOVE
+  const updateQuantity = (id: number | undefined, quantity: number) => {
+    setCart((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+
+        const maxStock = p.stock ?? Infinity;
+        const clamped = Math.min(Math.max(quantity, 1), maxStock);
+
+        return { ...p, quantity: clamped };
+      })
+    );
+  };
+
   const removeAt = (index: number) => {
     setCart((prev) =>
       prev.filter((_, i) => i !== index)
     );
   };
 
-  //  CLEAR
   const clearCart = () => {
     setCart([]);
   };
 
-  // 🔥 FUTURO BACKEND (listo para conectar API)
   const syncCartFromBackend = async () => {
     const res = await fetch(
       'https://kaizer-back.onrender.com/api/cart'
@@ -99,6 +162,7 @@ export function CartProvider({
         cart,
         addToCart,
         removeAt,
+        updateQuantity,
         clearCart,
         syncCartFromBackend
       }}
