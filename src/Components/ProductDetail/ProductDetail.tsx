@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import type { Product } from '../../Model/Product';
 import { getProductById } from '../../Services/product.service';
@@ -53,6 +54,7 @@ export default function ProductDetail() {
   const onAddToCart = () => {
     if (!product) return;
     addToCart(product);
+    toast.success(`${product.name || 'Producto'} añadido al carrito`);
   };
 
   if (loading) {
@@ -76,7 +78,7 @@ export default function ProductDetail() {
     );
   }
 
-  // Mapeos base estándar
+
   const dbName = product.name || (product as any).nombre || 'Producto sin título';
   const dbPrice = product.price || (product as any).precio || 0;
   const dbImg = product.imageUrl || (product as any).image_url || fallbackImage;
@@ -84,7 +86,6 @@ export default function ProductDetail() {
   const dbDescription = product.description || (product as any).descripcion || '';
   const dbStock = product.stock ?? 0;
 
-  // --- PROCESADOR 100% DINÁMICO DESDE JSONB ---
   let parsedSpecs: Record<string, any> = {};
   let rawSpecs = product.specifications || product.especificaciones || (product as any).specs;
 
@@ -95,14 +96,12 @@ export default function ProductDetail() {
       try {
         parsedSpecs = JSON.parse(rawSpecs);
       } catch {
-        // Fallback silencioso en producción
       }
     }
   }
 
   return (
     <div className="kaizer-detail-container">
-      {/* 1. MIGA DE PAN */}
       <nav className="kaizer-detail-breadcrumb">
         <Link to="/products">Productos</Link>
         <span>/</span>
@@ -111,7 +110,6 @@ export default function ProductDetail() {
         <span className="kaizer-active-crumb">{dbName}</span>
       </nav>
 
-      {/* 2. TARJETA PRINCIPAL (IMAGEN Y COMPRA) */}
       <div className="kaizer-detail-main-card">
         <div className="kaizer-detail-img-section">
           <div className="kaizer-detail-img-wrapper">
@@ -164,7 +162,6 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* 3. TARJETA DE ESPECIFICACIONES */}
       {parsedSpecs && Object.keys(parsedSpecs).length > 0 && (
         <div className="kaizer-specs-card">
           <div className="kaizer-specs-header">

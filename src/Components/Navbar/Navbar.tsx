@@ -16,7 +16,7 @@ export default function Navbar() {
       <div className="navbar-container">
         <ul className="nav-list">
           <li>
-            <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/home" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               Inicio
             </NavLink>
           </li>
@@ -35,10 +35,16 @@ export default function Navbar() {
         <div className="auth-actions">
           {isAuthenticated ? (
             <>
-              <span className="auth-user">
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  isActive ? 'auth-link active' : 'auth-link'
+                }
+                title={userEmail ?? 'Mi perfil'}
+              >
                 <i className="fi fi-rs-user"></i>
-                {userEmail ?? 'Usuario'}
-              </span>
+                {userEmail ?? 'Mi perfil'}
+              </NavLink>
               <button
                 type="button"
                 className="logout-button"

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import type { Product } from '../../Model/Product';
 import { useProducts } from '../../Hooks/useProducts';
@@ -115,7 +116,7 @@ export default function ProductList() {
         <h4 className="kaizer-sidebar-title">Filtros Avanzados</h4>
         
         <div className="kaizer-filter-item">
-          <label htmlFor="sort-select">Ordena por:</label>
+          <label htmlFor="sort-select">Ordenar por:</label>
           <select 
             id="sort-select"
             value={sortBy} 
@@ -215,7 +216,10 @@ export default function ProductList() {
                     <button
                       className="kaizer-btn-cart"
                       disabled={outOfStock.has(product.id)}
-                      onClick={() => addToCart(product as Product)}
+                      onClick={() => {
+                        addToCart(product as Product);
+                        toast.success(`${currentName} añadido al carrito`);
+                      }}
                     >
                        Añadir
                     </button>

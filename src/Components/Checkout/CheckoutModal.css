@@ -1,0 +1,491 @@
+/* ── Overlay ────────────────────────────────────────────────────────────────── */
+.co-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* ── Modal container ────────────────────────────────────────────────────────── */
+.co-modal {
+  background: var(--bg, #1a1a2e);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Header con pasos ───────────────────────────────────────────────────────── */
+.co-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.co-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.co-step {
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.2s;
+}
+
+.co-step.active {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.co-step.done {
+  color: #34d399;
+}
+
+.co-step-sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.co-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.co-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────────── */
+.co-body {
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.co-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f8f8f8;
+  margin: 0;
+}
+
+/* ── Sandbox badge ──────────────────────────────────────────────────────────── */
+.co-sandbox-badge {
+  font-size: 0.72rem;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  margin: 0;
+}
+
+/* ── Métodos de pago ────────────────────────────────────────────────────────── */
+.co-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.co-method-btn {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.75rem;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.co-method-btn:hover {
+  background: rgba(167, 139, 250, 0.08);
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.co-method-btn.selected {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: #a78bfa;
+}
+
+.co-method-icon {
+  grid-row: 1 / 3;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.co-method-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f0f0f0;
+}
+
+.co-method-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Mini resumen (paso 1) ──────────────────────────────────────────────────── */
+.co-mini-summary {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.co-mini-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.co-mini-total {
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f0f0f0;
+  font-size: 0.875rem;
+}
+
+/* ── Vista previa de tarjeta ────────────────────────────────────────────────── */
+.co-card-preview {
+  background: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #1e1b4b 100%);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem 1rem;
+  color: #fff;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.co-card-preview::before {
+  content: '';
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 130px;
+  height: 130px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+
+.co-card-chip {
+  width: 36px;
+  height: 28px;
+  background: linear-gradient(135deg, #f9ca24, #f0932b);
+  border-radius: 5px;
+  opacity: 0.85;
+}
+
+.co-card-number {
+  font-size: 1.15rem;
+  letter-spacing: 0.15em;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 0.5rem;
+}
+
+.co-card-footer {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.co-card-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 0.15rem;
+}
+
+.co-card-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #fff;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Campos de formulario ───────────────────────────────────────────────────── */
+.co-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.co-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.co-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.co-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.co-field input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  color: #f0f0f0;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.co-field input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.co-field input:focus {
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.07);
+}
+
+.co-field.has-error input {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.co-error {
+  font-size: 0.7rem;
+  color: #f87171;
+}
+
+.co-field-hint {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.co-required {
+  color: #f87171;
+}
+
+/* ── Error global ───────────────────────────────────────────────────────────── */
+.co-global-error {
+  font-size: 0.8rem;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  margin: 0;
+}
+
+/* ── Botones ────────────────────────────────────────────────────────────────── */
+.co-btn-primary {
+  width: 100%;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.co-btn-primary:hover:not(:disabled) {
+  background: #6d28d9;
+}
+
+.co-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.co-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.co-btn-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.co-btn-secondary {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.co-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── QR wrapper ─────────────────────────────────────────────────────────────── */
+.co-qr-wrapper {
+  display: flex;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 1rem;
+  align-items: flex-start;
+}
+
+.co-qr-img {
+  flex-shrink: 0;
+  background: white;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+}
+
+.co-qr-account {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+}
+
+.co-qr-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.co-qr-row > span {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.co-qr-row > strong {
+  font-size: 0.8rem;
+  color: #f0f0f0;
+  font-weight: 600;
+}
+
+.co-qr-cci {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.03em;
+}
+
+.co-qr-amount > span {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.co-qr-amount > strong {
+  font-size: 1rem !important;
+  color: #a78bfa !important;
+}
+
+.co-field--op {
+  margin-top: 0.25rem;
+}
+
+/* ── Resumen en Cart.tsx (selector de distrito) ─────────────────────────────── */
+.summary-district {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.summary-district label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.summary-district select {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  color: #f0f0f0;
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.summary-district select:focus {
+  border-color: #a78bfa;
+}
+
+.summary-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+.summary-row--muted {
+  opacity: 0.65;
+  font-size: 0.82rem;
+}
+
+.summary-hint {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  margin-left: 0.25rem;
+}
+
+.summary-free {
+  color: #34d399;
+}
+
+.summary-igv-note {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+}

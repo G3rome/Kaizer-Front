@@ -1,0 +1,395 @@
+.oc-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.oc-receipt {
+  padding: 1.5rem 1.5rem 1rem;
+  color: #f0f0f0;
+}
+
+.oc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.oc-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.oc-logo-mark {
+  width: 36px;
+  height: 36px;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oc-logo-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  letter-spacing: 0.05em;
+}
+
+.oc-company-info {
+  text-align: right;
+}
+
+.oc-company-info p {
+  margin: 0;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+.oc-doc-type {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #a78bfa;
+  background: rgba(167,139,250,0.1);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 6px;
+  padding: 0.35rem 0;
+  margin-bottom: 1rem;
+}
+
+.oc-order-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.oc-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.oc-meta-label {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.oc-meta-value {
+  font-size: 0.82rem;
+  color: #f0f0f0;
+  font-weight: 500;
+}
+
+.oc-order-id {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #a78bfa;
+  font-family: 'Courier New', monospace;
+}
+
+.oc-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 0.75rem 0;
+}
+
+.oc-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.oc-items-table thead tr {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.oc-items-table th {
+  padding: 0.4rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.4);
+}
+
+.oc-th-desc  { text-align: left; }
+.oc-th-qty   { text-align: center; width: 44px; }
+.oc-th-price { text-align: right; width: 72px; }
+.oc-th-total { text-align: right; width: 80px; }
+
+.oc-items-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.oc-items-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.oc-td-desc {
+  padding: 0.55rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.oc-item-name {
+  color: #f0f0f0;
+  font-weight: 500;
+  font-size: 0.82rem;
+}
+
+.oc-item-cat {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.68rem;
+}
+
+.oc-td-qty, .oc-td-price, .oc-td-total {
+  padding: 0.55rem 0.25rem;
+  color: rgba(255,255,255,0.7);
+  vertical-align: middle;
+}
+
+.oc-td-qty    { text-align: center; }
+.oc-td-price  { text-align: right; }
+.oc-td-total  { text-align: right; color: #f0f0f0; font-weight: 500; }
+
+.oc-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.oc-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.oc-total-final {
+  padding-top: 0.5rem;
+  border-top: 1.5px solid rgba(255,255,255,0.12);
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.oc-total-final strong {
+  color: #a78bfa;
+  font-size: 1.05rem;
+}
+
+.oc-footer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.oc-footer p {
+  margin: 0;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.5;
+}
+
+.oc-footer-thanks {
+  font-size: 0.78rem !important;
+  color: rgba(255,255,255,0.55) !important;
+  margin-top: 0.25rem !important;
+}
+
+.oc-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.oc-success-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(52,211,153,0.12);
+  border: 1px solid rgba(52,211,153,0.25);
+  color: #34d399;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 0.35rem 1rem;
+}
+
+.oc-checkmark {
+  font-size: 1rem;
+}
+
+.oc-action-buttons {
+  display: flex;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.oc-btn-print {
+  flex: 1;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.oc-btn-print:hover {
+  background: #6d28d9;
+}
+
+.oc-btn-close {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.oc-btn-close:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-receipt,
+  #printable-receipt * {
+    visibility: visible;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Posicionamiento en hoja */
+  #printable-receipt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5cm 2cm;
+    box-sizing: border-box;
+  }
+
+  /* Colores para impresión — modo claro */
+  .oc-receipt {
+    color: #1a1a1a !important;
+    background: #fff !important;
+  }
+
+  .oc-logo-mark {
+    background: #7c3aed !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .oc-logo-name {
+    color: #1a1a1a !important;
+  }
+
+  .oc-company-info p {
+    color: #555 !important;
+  }
+
+  .oc-doc-type {
+    color: #7c3aed !important;
+    background: #f5f3ff !important;
+    border-color: #ddd6fe !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .oc-meta-label {
+    color: #888 !important;
+  }
+
+  .oc-meta-value {
+    color: #1a1a1a !important;
+  }
+
+  .oc-order-id {
+    color: #7c3aed !important;
+  }
+
+  .oc-divider {
+    background: #e5e7eb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .oc-items-table th {
+    color: #888 !important;
+  }
+
+  .oc-item-name {
+    color: #1a1a1a !important;
+  }
+
+  .oc-item-cat {
+    color: #888 !important;
+  }
+
+  .oc-td-qty, .oc-td-price {
+    color: #444 !important;
+  }
+
+  .oc-td-total {
+    color: #1a1a1a !important;
+  }
+
+  .oc-total-row {
+    color: #444 !important;
+  }
+
+  .oc-total-final {
+    color: #1a1a1a !important;
+    border-top-color: #ccc !important;
+  }
+
+  .oc-total-final strong {
+    color: #7c3aed !important;
+  }
+
+  .oc-footer p {
+    color: #999 !important;
+  }
+
+  .oc-footer-thanks {
+    color: #555 !important;
+  }
+
+  .oc-items-table { page-break-inside: avoid; }
+  .oc-totals      { page-break-inside: avoid; }
+  .oc-footer      { page-break-inside: avoid; }
+}
