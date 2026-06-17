@@ -74,7 +74,7 @@ export default function ProductList() {
         <h4 className="kaizer-sidebar-title">Filtros Avanzados</h4>
         
         <div className="kaizer-filter-item">
-          <label htmlFor="sort-select">Ordenar por:</label>
+          <label htmlFor="sort-select">Ordena por:</label>
           <select 
             id="sort-select"
             value={sortBy} 
