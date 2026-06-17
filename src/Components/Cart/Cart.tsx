@@ -225,7 +225,7 @@ export default function Cart() {
               disabled={loading}
               onClick={() => setShowCheckout(true)}
             >
-              Proceder al pago →
+              Proceder al pago
             </button>
           </div>
         </div>

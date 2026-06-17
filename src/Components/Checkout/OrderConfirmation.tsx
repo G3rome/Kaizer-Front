@@ -14,7 +14,6 @@ interface Props {
   onClose:    () => void;
 }
 
-// Fecha formateada en español peruano
 function formatDate(): string {
   return new Intl.DateTimeFormat('es-PE', {
     day:    '2-digit',
@@ -44,7 +43,6 @@ export default function OrderConfirmation({
       {/* Área imprimible */}
       <div className="oc-receipt" ref={receiptRef} id="printable-receipt">
 
-        {/* Cabecera del comprobante */}
         <div className="oc-header">
           <div className="oc-logo">
             <span className="oc-logo-mark">K</span>
@@ -61,7 +59,6 @@ export default function OrderConfirmation({
           BOLETA DE VENTA ELECTRÓNICA
         </div>
 
-        {/* Número de orden y fecha */}
         <div className="oc-order-meta">
           <div className="oc-meta-group">
             <span className="oc-meta-label">N° Orden</span>
@@ -83,7 +80,6 @@ export default function OrderConfirmation({
 
         <div className="oc-divider" />
 
-        {/* Tabla de ítems */}
         <table className="oc-items-table">
           <thead>
             <tr>
@@ -112,7 +108,6 @@ export default function OrderConfirmation({
 
         <div className="oc-divider" />
 
-        {/* Desglose de totales */}
         <div className="oc-totals">
           <div className="oc-total-row">
             <span>Subtotal (sin IGV)</span>
@@ -134,7 +129,6 @@ export default function OrderConfirmation({
 
         <div className="oc-divider" />
 
-        {/* Pie legal */}
         <div className="oc-footer">
           <p>Este documento es una boleta de venta electrónica simulada con fines académicos.</p>
           <p>Emitido bajo el marco del IGV según Ley N° 29666 — Tasa: 18%</p>
@@ -142,7 +136,6 @@ export default function OrderConfirmation({
         </div>
       </div>
 
-      {/* Controles (no se imprimen) */}
       <div className="oc-actions no-print">
         <div className="oc-success-badge">
           <span className="oc-checkmark">✓</span>
@@ -151,7 +144,7 @@ export default function OrderConfirmation({
 
         <div className="oc-action-buttons">
           <button className="oc-btn-print" onClick={handlePrint}>
-            🖨 Imprimir / Guardar PDF
+            Imprimir / Guardar PDF
           </button>
           <button className="oc-btn-close" onClick={onClose}>
             Volver a la tienda
