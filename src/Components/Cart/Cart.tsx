@@ -39,7 +39,7 @@ const IGV_RATE = 0.18;
 
 export default function Cart() {
   const { cart, removeAt, updateQuantity, clearCart } = useCart();
-  const [loading, setLoading]               = useState(false);
+  const [loading] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState('Miraflores');
   const [showCheckout, setShowCheckout]     = useState(false);
   const [orderData, setOrderData]           = useState<null | {
